@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased selection:bg-brand-500/20 selection:text-brand-700 dark:selection:bg-brand-500/30 dark:selection:text-brand-300;
+  }
+}
+
+.markdown-editor {
+  font-variant-ligatures: none;
+  font-feature-settings: "calt" 0, "liga" 0;
+}
+
+/* Custom scrollbars for clean split view */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+/* Code highlight tokens (Custom styling supporting both light and dark mode) */
+.hljs {
+  @apply block overflow-x-auto p-4 rounded-lg font-mono text-sm leading-relaxed;
+}
+
+/* Light mode code styles */
+html:not(.dark) .hljs {
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+html:not(.dark) .hljs-keyword,
+html:not(.dark) .hljs-selector-tag,
+html:not(.dark) .hljs-built_in,
+html:not(.dark) .hljs-name,
+html:not(.dark) .hljs-tag {
+  color: #0f766e;
+  font-weight: 600;
+}
+
+html:not(.dark) .hljs-string,
+html:not(.dark) .hljs-title,
+html:not(.dark) .hljs-section,
+html:not(.dark) .hljs-attribute,
+html:not(.dark) .hljs-literal,
+html:not(.dark) .hljs-template-tag,
+html:not(.dark) .hljs-template-variable,
+html:not(.dark) .hljs-type {
+  color: #b45309;
+}
+
+html:not(.dark) .hljs-comment,
+html:not(.dark) .hljs-quote,
+html:not(.dark) .hljs-deletion,
+html:not(.dark) .hljs-meta {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+html:not(.dark) .hljs-number,
+html:not(.dark) .hljs-regexp,
+html:not(.dark) .hljs-link {
+  color: #2563eb;
+}
+
+/* Dark mode code styles */
+html.dark .hljs {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+html.dark .hljs-keyword,
+html.dark .hljs-selector-tag,
+html.dark .hljs-built_in,
+html.dark .hljs-name,
+html.dark .hljs-tag {
+  color: #2dd4bf;
+  font-weight: 600;
+}
+
+html.dark .hljs-string,
+html.dark .hljs-title,
+html.dark .hljs-section,
+html.dark .hljs-attribute,
+html.dark .hljs-literal,
+html.dark .hljs-template-tag,
+html.dark .hljs-template-variable,
+html.dark .hljs-type {
+  color: #fbbf24;
+}
+
+html.dark .hljs-comment,
+html.dark .hljs-quote,
+html.dark .hljs-deletion,
+html.dark .hljs-meta {
+  color: #64748b;
+  font-style: italic;
+}
+
+html.dark .hljs-number,
+html.dark .hljs-regexp,
+html.dark .hljs-link {
+  color: #60a5fa;
+}

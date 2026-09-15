@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="256" height="256">
+  <defs>
+    <linearGradient id="puremd-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2B74BA" />
+      <stop offset="100%" stop-color="#103661" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Haste do cadeado -->
+  <path d="M 40 55 V 40 A 20 20 0 0 1 80 40 V 55" fill="none" stroke="#2B74BA" stroke-width="12" />
+  
+  <!-- Corpo do cadeado -->
+  <rect x="20" y="55" width="80" height="55" rx="12" fill="url(#puremd-grad)" />
+  
+  <!-- Texto MD -->
+  <text x="60" y="93" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="32" fill="#FFFFFF" text-anchor="middle" letter-spacing="-1">MD</text>
+</svg>
