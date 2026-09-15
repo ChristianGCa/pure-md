@@ -9,6 +9,7 @@ import { Toolbar } from './components/Editor/Toolbar';
 import { EditorPane } from './components/Editor/EditorPane';
 import { PreviewPane } from './components/Preview/PreviewPane';
 import { StatusBar } from './components/Layout/StatusBar';
+import { WelcomeDialog } from './components/Welcome/WelcomeDialog';
 import { applyFormatting, FormatAction } from './utils/markdownHelpers';
 
 const DESKTOP_VIEW_QUERY = '(min-width: 1024px)';
@@ -176,6 +177,8 @@ export default function App() {
 
       {/* Bottom Status Bar */}
       <StatusBar stats={stats} cursorPos={cursorPos} />
+
+      <WelcomeDialog />
     </div>
   );
 }

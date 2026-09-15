@@ -46,6 +46,21 @@ describe('App Integration Test', () => {
     expect(screen.getByRole('contentinfo', { name: 'Barra de status do documento' })).toBeInTheDocument();
   });
 
+  it('shows the PureMD welcome message on load and lets the user close it', () => {
+    render(<App />);
+
+    const welcomeDialog = screen.getByRole('dialog', { name: 'Bem-vindo ao PureMD' });
+
+    expect(welcomeDialog).toBeInTheDocument();
+    expect(screen.getByText(/editor Markdown que funciona inteiramente no seu navegador/i)).toBeInTheDocument();
+
+    const closeButton = screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' });
+    expect(closeButton).toHaveFocus();
+    fireEvent.click(closeButton);
+
+    expect(welcomeDialog).not.toBeInTheDocument();
+  });
+
   it('switches view mode between split, editor and preview', () => {
     render(<App />);
 
