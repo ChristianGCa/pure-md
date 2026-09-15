@@ -1,5 +1,8 @@
 # Markdown Editor Web
 
+<img src="dist/favicon.svg" alt="Descrição da imagem" width="300">
+
+
 Editor Markdown executado inteiramente no navegador, com preview em tempo real, atalhos de formatação e exportação para `.md`.
 
 ## Funcionalidades
