@@ -85,14 +85,6 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
             Código-fonte
             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
           </a>
-          <a
-            href="/THIRD-PARTY-NOTICES.txt"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded-md px-3 py-2 font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-neutral-300"
-          >
-            Licenças de terceiros
-          </a>
         </div>
       </div>
     </dialog>
