@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 select-none z-20">
       {/* Left branding & document title */}
       <div className="flex items-center gap-3 min-w-[200px]">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-500/10 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400">
+        <div className="flex items-center justify-center w-8 h-8">
           <img src="/favicon.svg" alt="PureMD" className="w-7 h-7" />
         </div>
         <div className="flex items-center gap-1.5">
