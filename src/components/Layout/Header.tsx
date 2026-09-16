@@ -11,6 +11,7 @@ import {
   Square,
   Eye,
   Check,
+  Info,
 } from 'lucide-react';
 
 export type ViewMode = 'split' | 'editor' | 'preview';
@@ -28,6 +29,7 @@ interface HeaderProps {
   onClear: () => void;
   isDark: boolean;
   onToggleTheme: () => void;
+  onOpenAbout: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -43,6 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
   onClear,
   isDark,
   onToggleTheme,
+  onOpenAbout,
 }) => {
   const [copiedMd, setCopiedMd] = useState(false);
   const [copiedHtml, setCopiedHtml] = useState(false);
@@ -201,6 +204,16 @@ export const Header: React.FC<HeaderProps> = ({
           className="p-1.5 text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
         >
           {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+        </button>
+
+        <button
+          type="button"
+          onClick={onOpenAbout}
+          title="Sobre o projeto"
+          aria-label="Sobre o PureMD"
+          className="p-1.5 text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors"
+        >
+          <Info className="w-4 h-4" aria-hidden="true" />
         </button>
       </div>
     </header>

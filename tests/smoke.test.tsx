@@ -61,6 +61,24 @@ describe('App Integration Test', () => {
     expect(welcomeDialog).not.toBeInTheDocument();
   });
 
+  it('opens project details from the information button and closes the dialog', () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' }));
+
+    const aboutButton = screen.getByRole('button', { name: 'Sobre o PureMD' });
+    fireEvent.click(aboutButton);
+
+    const aboutDialog = screen.getByRole('dialog', { name: 'Sobre o PureMD' });
+    expect(aboutDialog).toBeInTheDocument();
+    expect(screen.getByText(/criado por ChrisG/i)).toBeInTheDocument();
+    expect(screen.getByText(/distribuído sob a licença MIT/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar informações do projeto' }));
+
+    expect(aboutDialog).not.toBeInTheDocument();
+  });
+
   it('switches view mode between split, editor and preview', () => {
     render(<App />);
 

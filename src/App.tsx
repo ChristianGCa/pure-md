@@ -10,6 +10,7 @@ import { EditorPane } from './components/Editor/EditorPane';
 import { PreviewPane } from './components/Preview/PreviewPane';
 import { StatusBar } from './components/Layout/StatusBar';
 import { WelcomeDialog } from './components/Welcome/WelcomeDialog';
+import { AboutDialog } from './components/About/AboutDialog';
 import { applyFormatting, FormatAction } from './utils/markdownHelpers';
 
 const DESKTOP_VIEW_QUERY = '(min-width: 1024px)';
@@ -24,6 +25,7 @@ export default function App() {
   const [isDesktop, setIsDesktop] = useState(isDesktopViewport);
   const [viewMode, setViewMode] = useState<ViewMode>(() => (isDesktopViewport() ? 'split' : 'editor'));
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   const { isDark, toggleTheme } = useTheme();
   const { editorRef, previewRef, handleEditorScroll, handlePreviewScroll } = useSyncScroll();
@@ -133,6 +135,7 @@ export default function App() {
         onClear={handleClear}
         isDark={isDark}
         onToggleTheme={toggleTheme}
+        onOpenAbout={() => setIsAboutOpen(true)}
       />
 
       {/* Main Split-View Workspace */}
@@ -179,6 +182,8 @@ export default function App() {
       <StatusBar stats={stats} cursorPos={cursorPos} />
 
       <WelcomeDialog />
+
+      {isAboutOpen && <AboutDialog onClose={() => setIsAboutOpen(false)} />}
     </div>
   );
 }
