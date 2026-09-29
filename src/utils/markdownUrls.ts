@@ -10,6 +10,7 @@ export function safeMarkdownUrl(url: string, attribute: string): string | undefi
   try {
     const base = new URL(window.location.href);
     const resolved = new URL(normalizedUrl, base);
+    if (resolved.username || resolved.password) return undefined;
 
     if (attribute === 'src') {
       return resolved.origin === base.origin || resolved.protocol === 'https:'

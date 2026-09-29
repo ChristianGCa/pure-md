@@ -90,7 +90,7 @@ describe('App Integration Test', () => {
 
     const aboutDialog = screen.getByRole('dialog', { name: 'Sobre o PureMD' });
     expect(aboutDialog).toBeInTheDocument();
-    expect(screen.getByText(/criado por ChrisG/i)).toBeInTheDocument();
+    expect(screen.getByText(/criado por ChristianGCa/i)).toBeInTheDocument();
     expect(screen.getByText(/distribuído sob a licença MIT/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Licença MIT' })).toHaveAttribute(
       'href',
@@ -113,11 +113,11 @@ describe('App Integration Test', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Aviso de privacidade' }));
 
     expect(screen.getByRole('dialog', { name: 'Privacidade do PureMD' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'candelonichristian@gmail.com' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'christiangca.dev@gmail.com' })).toHaveAttribute(
       'href',
-      'mailto:candelonichristian@gmail.com'
+      'mailto:christiangca.dev@gmail.com'
     );
-    expect(screen.getByText(/ChristianGCa/)).toBeInTheDocument();
+    expect(screen.getByText('Responsável pelo site: ChristianGCa.')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Imagens externas' })).toBeInTheDocument();
   });
 
@@ -143,7 +143,7 @@ describe('App Integration Test', () => {
     });
     window.localStorage.setItem(
       'markdown_document',
-      JSON.stringify('# Título\n\n![external](https://images.example.com/p.png)\n\n<script>alert(1)</script>\n\n[bad](javascript:alert(1))\n\n```js\nconst ok = true;\n```')
+      JSON.stringify('# Título\n\n![external](https://images.example.com/p.png)\n\n![local](/favicon.svg)\n\n<script>alert(1)</script>\n\n[bad](javascript:alert(1))\n\n```js\nconst ok = true;\n```')
     );
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' }));
@@ -160,7 +160,10 @@ describe('App Integration Test', () => {
     expect(outputs[0]).toBe(outputs[1]);
     expect(outputs[1]).toBe(outputs[2]);
     expect(outputs[0]).toContain('<h1>Título</h1>');
-    expect(outputs[0]).toContain('src="https://images.example.com/p.png"');
+    expect(outputs[0]).toContain('href="https://images.example.com/p.png"');
+    expect(outputs[0]).toContain('>external</a>');
+    expect(outputs[0]).not.toContain('src="https://images.example.com/p.png"');
+    expect(outputs[0]).toContain('src="/favicon.svg"');
     expect(outputs[0]).not.toContain('<script');
     expect(outputs[0]).not.toContain('javascript:');
     expect(outputs[0]).not.toContain('Copiar código');
