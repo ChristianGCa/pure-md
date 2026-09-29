@@ -5,9 +5,13 @@ export type Theme = 'light' | 'dark' | 'system';
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      const saved = window.localStorage.getItem('markdown_theme') as Theme | null;
-      if (saved && ['light', 'dark', 'system'].includes(saved)) {
-        return saved;
+      try {
+        const saved = window.localStorage.getItem('markdown_theme') as Theme | null;
+        if (saved && ['light', 'dark', 'system'].includes(saved)) {
+          return saved;
+        }
+      } catch (error) {
+        console.warn('Error reading theme preference:', error);
       }
     }
     return 'system';
@@ -35,7 +39,11 @@ export function useTheme() {
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme);
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem('markdown_theme', newTheme);
+      try {
+        window.localStorage.setItem('markdown_theme', newTheme);
+      } catch (error) {
+        console.warn('Error saving theme preference:', error);
+      }
     }
   }, []);
 

@@ -3,9 +3,10 @@ import { ExternalLink, X } from 'lucide-react';
 
 interface AboutDialogProps {
   onClose: () => void;
+  onOpenPrivacy: () => void;
 }
 
-export function AboutDialog({ onClose }: AboutDialogProps) {
+export function AboutDialog({ onClose, onOpenPrivacy }: AboutDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
           </div>
           <div className="grid gap-1 py-3 sm:grid-cols-4 sm:gap-4">
             <dt className="font-mono text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Privacidade</dt>
-            <dd className="text-neutral-700 dark:text-neutral-300 sm:col-span-3">Sem backend, contas ou analytics. Os documentos ficam no armazenamento local do navegador.</dd>
+            <dd className="text-neutral-700 dark:text-neutral-300 sm:col-span-3">Sem backend ou contas. O código do aplicativo não integra analytics; os documentos são salvos neste navegador quando o armazenamento está disponível.</dd>
           </div>
           <div className="grid gap-1 py-3 sm:grid-cols-4 sm:gap-4">
             <dt className="font-mono text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Tecnologias</dt>
@@ -76,6 +77,29 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
         </dl>
 
         <div className="mt-6 flex flex-wrap gap-3 text-sm">
+          <button
+            type="button"
+            onClick={onOpenPrivacy}
+            className="rounded-md border border-neutral-300 px-3 py-2 font-medium text-neutral-700 hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          >
+            Aviso de privacidade
+          </button>
+          <a
+            href="https://github.com/ChristianGCa/pure-md/blob/main/LICENSE"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md border border-neutral-300 px-3 py-2 font-medium text-neutral-700 hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          >
+            Licença MIT
+          </a>
+          <a
+            href="/THIRD-PARTY-NOTICES.txt"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md border border-neutral-300 px-3 py-2 font-medium text-neutral-700 hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          >
+            Licenças de terceiros
+          </a>
           <a
             href="https://github.com/ChristianGCa/pure-md"
             target="_blank"

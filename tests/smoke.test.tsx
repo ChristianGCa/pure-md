@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from '../src/App';
 
 function mockDesktopViewport(isDesktop: boolean) {
@@ -25,6 +25,8 @@ describe('App Integration Test', () => {
     mockDesktopViewport(true);
   });
 
+  afterEach(() => vi.restoreAllMocks());
+
   it('renders application with editor, preview and toolbar', () => {
     render(<App />);
 
@@ -44,6 +46,23 @@ describe('App Integration Test', () => {
 
     // Status Bar
     expect(screen.getByRole('contentinfo', { name: 'Barra de status do documento' })).toBeInTheDocument();
+  });
+
+  it('warns about failed saves while keeping the document editable', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' }));
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Storage quota exceeded', 'QuotaExceededError');
+    });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Editor Markdown' }), {
+      target: { value: 'Texto ainda editável' },
+    });
+
+    expect(screen.getByRole('textbox', { name: 'Editor Markdown' })).toHaveValue('Texto ainda editável');
+    expect(screen.getByRole('alert')).toHaveTextContent(/Não foi possível ler ou salvar dados locais/i);
+    expect(screen.getByRole('button', { name: 'Baixar .md' })).toBeInTheDocument();
   });
 
   it('shows the PureMD welcome message on load and lets the user close it', () => {
@@ -73,11 +92,33 @@ describe('App Integration Test', () => {
     expect(aboutDialog).toBeInTheDocument();
     expect(screen.getByText(/criado por ChrisG/i)).toBeInTheDocument();
     expect(screen.getByText(/distribuído sob a licença MIT/i)).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Licenças de terceiros' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Licença MIT' })).toHaveAttribute(
+      'href',
+      'https://github.com/ChristianGCa/pure-md/blob/main/LICENSE'
+    );
+    expect(screen.getByRole('link', { name: 'Licenças de terceiros' })).toHaveAttribute(
+      'href',
+      '/THIRD-PARTY-NOTICES.txt'
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Fechar informações do projeto' }));
 
     expect(aboutDialog).not.toBeInTheDocument();
+  });
+
+  it('opens privacy information with a public contact address', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Sobre o PureMD' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Aviso de privacidade' }));
+
+    expect(screen.getByRole('dialog', { name: 'Privacidade do PureMD' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'candelonichristian@gmail.com' })).toHaveAttribute(
+      'href',
+      'mailto:candelonichristian@gmail.com'
+    );
+    expect(screen.getByText(/ChristianGCa/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Imagens externas' })).toBeInTheDocument();
   });
 
   it('switches view mode between split, editor and preview', () => {
@@ -92,6 +133,37 @@ describe('App Integration Test', () => {
     fireEvent.click(previewOnlyBtn);
     expect(screen.queryByRole('textbox', { name: 'Editor Markdown' })).not.toBeInTheDocument();
     expect(screen.getByTestId('preview-pane')).toBeInTheDocument();
+  });
+
+  it('copies safe document HTML in every view mode', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    window.localStorage.setItem(
+      'markdown_document',
+      JSON.stringify('# Título\n\n![external](https://images.example.com/p.png)\n\n<script>alert(1)</script>\n\n[bad](javascript:alert(1))\n\n```js\nconst ok = true;\n```')
+    );
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' }));
+
+    for (const mode of ['Apenas Editor', 'Apenas Pré-visualização', 'Visualização Dividida']) {
+      fireEvent.click(screen.getByRole('button', { name: mode }));
+      fireEvent.click(screen.getByRole('button', { name: 'Copiar HTML' }));
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(
+        mode === 'Apenas Editor' ? 1 : mode === 'Apenas Pré-visualização' ? 2 : 3
+      ));
+    }
+
+    const outputs: string[] = writeText.mock.calls.map((call) => call[0]);
+    expect(outputs[0]).toBe(outputs[1]);
+    expect(outputs[1]).toBe(outputs[2]);
+    expect(outputs[0]).toContain('<h1>Título</h1>');
+    expect(outputs[0]).toContain('src="https://images.example.com/p.png"');
+    expect(outputs[0]).not.toContain('<script');
+    expect(outputs[0]).not.toContain('javascript:');
+    expect(outputs[0]).not.toContain('Copiar código');
   });
 
   it('starts in editor mode and removes split view on mobile', () => {

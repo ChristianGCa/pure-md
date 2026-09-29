@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ShieldCheck, X } from 'lucide-react';
 
-export function WelcomeDialog() {
+export function WelcomeDialog({ onOpenPrivacy }: { onOpenPrivacy: () => void }) {
   const [isOpen, setIsOpen] = useState(true);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -63,9 +63,19 @@ export function WelcomeDialog() {
         <div className="mt-6 flex items-start gap-3 border-t border-neutral-200 pt-5 text-sm text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-neutral-700 dark:text-neutral-300" aria-hidden="true" />
           <p id="welcome-privacy">
-            Seus textos ficam salvos localmente e não são enviados pelo aplicativo para nenhum servidor.
+            O PureMD tenta salvar seus textos neste navegador. Imagens externas só são carregadas se você escolher; a hospedagem recebe dados técnicos de acesso.
           </p>
         </div>
+        <button
+          type="button"
+          onClick={() => {
+            setIsOpen(false);
+            onOpenPrivacy();
+          }}
+          className="mt-4 text-sm font-medium underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        >
+          Leia o aviso de privacidade
+        </button>
       </div>
     </dialog>
   );
