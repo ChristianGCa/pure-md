@@ -19,11 +19,13 @@ Editor Markdown executado inteiramente no navegador, com preview em tempo real, 
 
 ## Segurança e privacidade
 
-O aplicativo não possui backend, contas ou analytics. O título e o conteúdo do documento ficam no `localStorage` do navegador e não são enviados pelo aplicativo.
+O aplicativo não possui backend ou contas e seu código não integra analytics. O título e o conteúdo do documento ficam no `localStorage` do navegador e não são enviados pelo aplicativo. A hospedagem na Vercel recebe dados técnicos das requisições de acesso.
 
 HTML inserido no Markdown não é executado. Links e imagens com protocolos perigosos são bloqueados; links aceitam `http`, `https` e `mailto`, enquanto imagens aceitam apenas `https` e caminhos locais.
 
 Imagens externas referenciadas no Markdown só são carregadas após clicar em “Carregar imagem externa”. Nesse caso, o navegador faz uma requisição ao servidor que hospeda a imagem, compartilhando o endereço IP e a URL solicitada.
+
+O aviso de privacidade está disponível nos diálogos de boas-vindas e “Sobre”. O responsável pelo site se identifica como ChristianGCa e pode ser contatado em <candelonichristian@gmail.com>.
 
 ## Tecnologias
 

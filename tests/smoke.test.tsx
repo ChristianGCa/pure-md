@@ -99,6 +99,21 @@ describe('App Integration Test', () => {
     expect(aboutDialog).not.toBeInTheDocument();
   });
 
+  it('opens privacy information with a public contact address', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Sobre o PureMD' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Aviso de privacidade' }));
+
+    expect(screen.getByRole('dialog', { name: 'Privacidade do PureMD' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'candelonichristian@gmail.com' })).toHaveAttribute(
+      'href',
+      'mailto:candelonichristian@gmail.com'
+    );
+    expect(screen.getByText(/ChristianGCa/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Imagens externas' })).toBeInTheDocument();
+  });
+
   it('switches view mode between split, editor and preview', () => {
     render(<App />);
 

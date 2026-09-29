@@ -11,6 +11,7 @@ import { PreviewPane } from './components/Preview/PreviewPane';
 import { StatusBar } from './components/Layout/StatusBar';
 import { WelcomeDialog } from './components/Welcome/WelcomeDialog';
 import { AboutDialog } from './components/About/AboutDialog';
+import { PrivacyDialog } from './components/Privacy/PrivacyDialog';
 import { applyFormatting, FormatAction } from './utils/markdownHelpers';
 
 const DESKTOP_VIEW_QUERY = '(min-width: 1024px)';
@@ -26,6 +27,7 @@ export default function App() {
   const [viewMode, setViewMode] = useState<ViewMode>(() => (isDesktopViewport() ? 'split' : 'editor'));
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   const { isDark, toggleTheme } = useTheme();
   const { editorRef, previewRef, handleEditorScroll, handlePreviewScroll } = useSyncScroll();
@@ -190,9 +192,18 @@ export default function App() {
       {/* Bottom Status Bar */}
       <StatusBar stats={stats} cursorPos={cursorPos} />
 
-      <WelcomeDialog />
+      <WelcomeDialog onOpenPrivacy={() => setIsPrivacyOpen(true)} />
 
-      {isAboutOpen && <AboutDialog onClose={() => setIsAboutOpen(false)} />}
+      {isAboutOpen && (
+        <AboutDialog
+          onClose={() => setIsAboutOpen(false)}
+          onOpenPrivacy={() => {
+            setIsAboutOpen(false);
+            setIsPrivacyOpen(true);
+          }}
+        />
+      )}
+      {isPrivacyOpen && <PrivacyDialog onClose={() => setIsPrivacyOpen(false)} />}
     </div>
   );
 }
