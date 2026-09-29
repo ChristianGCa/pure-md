@@ -85,6 +85,22 @@ export function AboutDialog({ onClose, onOpenPrivacy }: AboutDialogProps) {
             Aviso de privacidade
           </button>
           <a
+            href="https://github.com/ChristianGCa/pure-md/blob/main/LICENSE"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md border border-neutral-300 px-3 py-2 font-medium text-neutral-700 hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          >
+            Licença MIT
+          </a>
+          <a
+            href="/THIRD-PARTY-NOTICES.txt"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md border border-neutral-300 px-3 py-2 font-medium text-neutral-700 hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          >
+            Licenças de terceiros
+          </a>
+          <a
             href="https://github.com/ChristianGCa/pure-md"
             target="_blank"
             rel="noopener noreferrer"

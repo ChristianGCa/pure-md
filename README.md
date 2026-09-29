@@ -58,7 +58,7 @@ O build estático é gerado em `dist/`.
 
 ## Licenças
 
-O código deste projeto é distribuído sob a [licença MIT](LICENSE), copyright © 2026 ChrisG.
+O código deste projeto é distribuído sob a [licença MIT](LICENSE), copyright © 2026 ChrisG. O build também publica uma cópia em `/LICENSE` para acompanhar os arquivos distribuídos.
 
 As licenças e atribuições das dependências incluídas no aplicativo estão em [THIRD-PARTY-NOTICES.txt](public/THIRD-PARTY-NOTICES.txt). Para regenerar o arquivo após atualizar dependências:
 

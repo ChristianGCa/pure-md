@@ -92,7 +92,14 @@ describe('App Integration Test', () => {
     expect(aboutDialog).toBeInTheDocument();
     expect(screen.getByText(/criado por ChrisG/i)).toBeInTheDocument();
     expect(screen.getByText(/distribuído sob a licença MIT/i)).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Licenças de terceiros' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Licença MIT' })).toHaveAttribute(
+      'href',
+      'https://github.com/ChristianGCa/pure-md/blob/main/LICENSE'
+    );
+    expect(screen.getByRole('link', { name: 'Licenças de terceiros' })).toHaveAttribute(
+      'href',
+      '/THIRD-PARTY-NOTICES.txt'
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Fechar informações do projeto' }));
 
