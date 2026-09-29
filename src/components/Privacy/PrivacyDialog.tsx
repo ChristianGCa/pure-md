@@ -52,7 +52,7 @@ export function PrivacyDialog({ onClose }: PrivacyDialogProps) {
 
           <section>
             <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">Seus documentos no navegador</h3>
-            <p>O texto, o título e a preferência de tema ficam no armazenamento local deste navegador para manter seu trabalho entre visitas. O aplicativo não envia o documento à hospedagem. Esses dados permanecem no dispositivo até você substituí-los ou remover os dados do site nas configurações do navegador. Você pode baixar o texto em `.md` a qualquer momento.</p>
+            <p>Quando o navegador permite, o texto, o título e a preferência de tema são salvos localmente para manter seu trabalho entre visitas. O aplicativo não envia o documento à hospedagem. Esses dados permanecem no dispositivo até você substituí-los ou remover os dados do site nas configurações do navegador. Se o salvamento falhar, o editor mostra um aviso. Você pode baixar o texto em `.md` a qualquer momento.</p>
           </section>
 
           <section>

@@ -68,7 +68,7 @@ export function AboutDialog({ onClose, onOpenPrivacy }: AboutDialogProps) {
           </div>
           <div className="grid gap-1 py-3 sm:grid-cols-4 sm:gap-4">
             <dt className="font-mono text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Privacidade</dt>
-            <dd className="text-neutral-700 dark:text-neutral-300 sm:col-span-3">Sem backend ou contas. O código do aplicativo não integra analytics; os documentos ficam no armazenamento local do navegador.</dd>
+            <dd className="text-neutral-700 dark:text-neutral-300 sm:col-span-3">Sem backend ou contas. O código do aplicativo não integra analytics; os documentos são salvos neste navegador quando o armazenamento está disponível.</dd>
           </div>
           <div className="grid gap-1 py-3 sm:grid-cols-4 sm:gap-4">
             <dt className="font-mono text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Tecnologias</dt>

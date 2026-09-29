@@ -63,7 +63,7 @@ export function WelcomeDialog({ onOpenPrivacy }: { onOpenPrivacy: () => void }) 
         <div className="mt-6 flex items-start gap-3 border-t border-neutral-200 pt-5 text-sm text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-neutral-700 dark:text-neutral-300" aria-hidden="true" />
           <p id="welcome-privacy">
-            Seus textos ficam salvos localmente. Imagens externas só são carregadas se você escolher; a hospedagem recebe dados técnicos de acesso.
+            O PureMD tenta salvar seus textos neste navegador. Imagens externas só são carregadas se você escolher; a hospedagem recebe dados técnicos de acesso.
           </p>
         </div>
         <button
