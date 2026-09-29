@@ -46,8 +46,8 @@ export function PrivacyDialog({ onClose }: PrivacyDialogProps) {
 
         <div className="mt-6 space-y-5 text-neutral-700 dark:text-neutral-300">
           <section>
-            <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">Responsável e contato</h3>
-            <p>O responsável pelo PureMD se identifica publicamente como ChristianGCa. Para dúvidas ou solicitações sobre dados pessoais, escreva para <a className="underline" href="mailto:candelonichristian@gmail.com">candelonichristian@gmail.com</a>.</p>
+            <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">Contato</h3>
+            <p>Para dúvidas ou solicitações sobre dados pessoais, escreva para <a className="underline" href="mailto:candelonichristian@gmail.com">candelonichristian@gmail.com</a>.</p>
           </section>
 
           <section>
