@@ -105,76 +105,79 @@ const PreBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({ children, ..
   );
 };
 
-export const PreviewPane: React.FC<PreviewPaneProps> = ({
+export const MarkdownContent: React.FC<{ content: string; exportMode?: boolean }> = ({
   content,
-  onScroll,
-  previewRef,
+  exportMode = false,
 }) => {
   return (
-    <div
-      ref={previewRef}
-      onScroll={onScroll}
-      className="w-full h-full flex-1 overflow-y-auto p-6 lg:p-8 bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100"
-      data-testid="preview-pane"
+    <Markdown
+      skipHtml
+      urlTransform={safeMarkdownUrl}
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeHighlight]}
+      components={{
+        img({ node: _node, ...props }) {
+          return exportMode ? <img {...props} /> : <MarkdownImage {...props} />;
+        },
+        pre({ node: _node, ...props }) {
+          return exportMode ? <pre {...props} /> : <PreBlock {...props} />;
+        },
+        code({ node: _node, className, children, ...props }) {
+          const isInline = !className?.includes('hljs') && !className?.includes('language-');
+          if (isInline) {
+            return (
+              <code
+                className="px-1.5 py-0.5 rounded text-xs font-mono bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700"
+                {...props}
+              >
+                {children}
+              </code>
+            );
+          }
+          return (
+            <code className={className} {...props}>
+              {children}
+            </code>
+          );
+        },
+        table({ node: _node, children, ...props }) {
+          return (
+            <div className="overflow-x-auto my-4">
+              <table {...props} className="w-full text-left border border-neutral-200 dark:border-neutral-800">
+                {children}
+              </table>
+            </div>
+          );
+        },
+        a({ node: _node, children, href, ...props }) {
+          const isExternal = href?.startsWith('http://') || href?.startsWith('https://');
+          return (
+            <a
+              href={href}
+              target={isExternal ? '_blank' : undefined}
+              rel={isExternal ? 'noopener noreferrer' : undefined}
+              {...props}
+            >
+              {children}
+            </a>
+          );
+        },
+      }}
     >
-      <div className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-brand-600 dark:prose-a:text-brand-400 prose-a:no-underline hover:prose-a:underline prose-table:border prose-table:border-collapse prose-th:bg-neutral-100 dark:prose-th:bg-neutral-900 prose-th:p-2 prose-td:p-2 prose-td:border prose-th:border">
-        <Markdown
-          skipHtml
-          urlTransform={safeMarkdownUrl}
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight]}
-          components={{
-            img({ node: _node, ...props }) {
-              return <MarkdownImage {...props} />;
-            },
-            pre({ node: _node, ...props }) {
-              return <PreBlock {...props} />;
-            },
-            code({ node: _node, className, children, ...props }) {
-              const isInline = !className?.includes('hljs') && !className?.includes('language-');
-              if (isInline) {
-                return (
-                  <code
-                    className="px-1.5 py-0.5 rounded text-xs font-mono bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700"
-                    {...props}
-                  >
-                    {children}
-                  </code>
-                );
-              }
-              return (
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              );
-            },
-            table({ node: _node, children, ...props }) {
-              return (
-                <div className="overflow-x-auto my-4">
-                  <table {...props} className="w-full text-left border border-neutral-200 dark:border-neutral-800">
-                    {children}
-                  </table>
-                </div>
-              );
-            },
-            a({ node: _node, children, href, ...props }) {
-              const isExternal = href?.startsWith('http://') || href?.startsWith('https://');
-              return (
-                <a
-                  href={href}
-                  target={isExternal ? '_blank' : undefined}
-                  rel={isExternal ? 'noopener noreferrer' : undefined}
-                  {...props}
-                >
-                  {children}
-                </a>
-              );
-            },
-          }}
-        >
-          {content}
-        </Markdown>
-      </div>
-    </div>
+      {content}
+    </Markdown>
   );
 };
+
+export const PreviewPane: React.FC<PreviewPaneProps> = ({ content, onScroll, previewRef }) => (
+  <div
+    ref={previewRef}
+    onScroll={onScroll}
+    className="w-full h-full flex-1 overflow-y-auto p-6 lg:p-8 bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100"
+    data-testid="preview-pane"
+  >
+    <div className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-brand-600 dark:prose-a:text-brand-400 prose-a:no-underline hover:prose-a:underline prose-table:border prose-table:border-collapse prose-th:bg-neutral-100 dark:prose-th:bg-neutral-900 prose-th:p-2 prose-td:p-2 prose-td:border prose-th:border">
+      <MarkdownContent content={content} />
+    </div>
+  </div>
+);

@@ -7,7 +7,7 @@ import { DEFAULT_MARKDOWN } from './utils/sampleDocument';
 import { Header, ViewMode } from './components/Layout/Header';
 import { Toolbar } from './components/Editor/Toolbar';
 import { EditorPane } from './components/Editor/EditorPane';
-import { PreviewPane } from './components/Preview/PreviewPane';
+import { MarkdownContent, PreviewPane } from './components/Preview/PreviewPane';
 import { StatusBar } from './components/Layout/StatusBar';
 import { WelcomeDialog } from './components/Welcome/WelcomeDialog';
 import { AboutDialog } from './components/About/AboutDialog';
@@ -85,16 +85,15 @@ export default function App() {
 
   const handleCopyHtml = useCallback(async (): Promise<boolean> => {
     try {
-      const previewEl = previewRef.current?.querySelector('.prose');
-      if (previewEl && navigator.clipboard) {
-        await navigator.clipboard.writeText(previewEl.innerHTML);
-        return true;
-      }
-      return false;
+      if (!navigator.clipboard) return false;
+      const { renderToStaticMarkup } = await import('react-dom/server');
+      const html = renderToStaticMarkup(<MarkdownContent content={content} exportMode />);
+      await navigator.clipboard.writeText(html);
+      return true;
     } catch {
       return false;
     }
-  }, [previewRef]);
+  }, [content]);
 
   const handleDownloadMd = useCallback(() => {
     const filename = `${title.trim() || 'documento'}.md`;

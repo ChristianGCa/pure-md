@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from '../src/App';
 
 function mockDesktopViewport(isDesktop: boolean) {
@@ -126,6 +126,37 @@ describe('App Integration Test', () => {
     fireEvent.click(previewOnlyBtn);
     expect(screen.queryByRole('textbox', { name: 'Editor Markdown' })).not.toBeInTheDocument();
     expect(screen.getByTestId('preview-pane')).toBeInTheDocument();
+  });
+
+  it('copies safe document HTML in every view mode', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    window.localStorage.setItem(
+      'markdown_document',
+      JSON.stringify('# Título\n\n![external](https://images.example.com/p.png)\n\n<script>alert(1)</script>\n\n[bad](javascript:alert(1))\n\n```js\nconst ok = true;\n```')
+    );
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' }));
+
+    for (const mode of ['Apenas Editor', 'Apenas Pré-visualização', 'Visualização Dividida']) {
+      fireEvent.click(screen.getByRole('button', { name: mode }));
+      fireEvent.click(screen.getByRole('button', { name: 'Copiar HTML' }));
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(
+        mode === 'Apenas Editor' ? 1 : mode === 'Apenas Pré-visualização' ? 2 : 3
+      ));
+    }
+
+    const outputs: string[] = writeText.mock.calls.map((call) => call[0]);
+    expect(outputs[0]).toBe(outputs[1]);
+    expect(outputs[1]).toBe(outputs[2]);
+    expect(outputs[0]).toContain('<h1>Título</h1>');
+    expect(outputs[0]).toContain('src="https://images.example.com/p.png"');
+    expect(outputs[0]).not.toContain('<script');
+    expect(outputs[0]).not.toContain('javascript:');
+    expect(outputs[0]).not.toContain('Copiar código');
   });
 
   it('starts in editor mode and removes split view on mobile', () => {
