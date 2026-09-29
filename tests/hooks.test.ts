@@ -65,6 +65,7 @@ describe('useLocalStorage hook', () => {
   });
 
   it('allows editing when reading localStorage is blocked', () => {
+    window.localStorage.setItem('test-key', '"existing private draft"');
     const read = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new DOMException('Access denied', 'SecurityError');
     });
@@ -75,6 +76,10 @@ describe('useLocalStorage hook', () => {
     expect(result.current[0]).toBe('initial');
     expect(result.current[2]).toBe(true);
     read.mockRestore();
+    act(() => result.current[1]('new text in memory'));
+    expect(result.current[0]).toBe('new text in memory');
+    expect(result.current[2]).toBe(true);
+    expect(window.localStorage.getItem('test-key')).toBe('"existing private draft"');
     warning.mockRestore();
   });
 });
