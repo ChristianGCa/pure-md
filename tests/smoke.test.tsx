@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from '../src/App';
 
@@ -25,6 +25,8 @@ describe('App Integration Test', () => {
     mockDesktopViewport(true);
   });
 
+  afterEach(() => vi.restoreAllMocks());
+
   it('renders application with editor, preview and toolbar', () => {
     render(<App />);
 
@@ -44,6 +46,23 @@ describe('App Integration Test', () => {
 
     // Status Bar
     expect(screen.getByRole('contentinfo', { name: 'Barra de status do documento' })).toBeInTheDocument();
+  });
+
+  it('warns about failed saves while keeping the document editable', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' }));
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Storage quota exceeded', 'QuotaExceededError');
+    });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Editor Markdown' }), {
+      target: { value: 'Texto ainda editável' },
+    });
+
+    expect(screen.getByRole('textbox', { name: 'Editor Markdown' })).toHaveValue('Texto ainda editável');
+    expect(screen.getByRole('alert')).toHaveTextContent(/Não foi possível ler ou salvar dados locais/i);
+    expect(screen.getByRole('button', { name: 'Baixar .md' })).toBeInTheDocument();
   });
 
   it('shows the PureMD welcome message on load and lets the user close it', () => {

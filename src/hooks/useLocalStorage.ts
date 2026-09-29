@@ -1,45 +1,46 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
-export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
-  const readValue = useCallback((): T => {
-    if (typeof window === 'undefined') {
-      return initialValue;
-    }
+type StoredValue = { value: string; storageError: boolean };
+type SetValue = (value: string | ((previous: string) => string)) => void;
+
+export function useLocalStorage(key: string, initialValue: string): [string, SetValue, boolean] {
+  const [stored, setStored] = useState<StoredValue>(() => {
+    if (typeof window === 'undefined') return { value: initialValue, storageError: false };
 
     try {
       const item = window.localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValue;
-    } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
-      return initialValue;
-    }
-  }, [key, initialValue]);
-
-  const [storedValue, setStoredValue] = useState<T>(readValue);
-
-  const setValue = useCallback(
-    (value: T | ((val: T) => T)) => {
-      if (typeof window === 'undefined') {
-        console.warn(`Tried to set localStorage key "${key}" even though window is not defined`);
-        return;
-      }
+      if (item === null) return { value: initialValue, storageError: false };
 
       try {
-        setStoredValue((prev) => {
-          const newValue = value instanceof Function ? value(prev) : value;
-          window.localStorage.setItem(key, JSON.stringify(newValue));
-          return newValue;
-        });
-      } catch (error) {
-        console.warn(`Error setting localStorage key "${key}":`, error);
+        const parsed: unknown = JSON.parse(item);
+        if (typeof parsed === 'string') return { value: parsed, storageError: false };
+      } catch {
+        // Keep the original bytes available in the editor for recovery.
       }
-    },
-    [key]
-  );
 
-  useEffect(() => {
-    setStoredValue(readValue());
-  }, [readValue]);
+      console.warn(`Invalid localStorage value for "${key}"; showing the original text`);
+      return { value: item, storageError: true };
+    } catch (error) {
+      console.warn(`Error reading localStorage key "${key}":`, error);
+      return { value: initialValue, storageError: true };
+    }
+  });
+  const valueRef = useRef(stored.value);
 
-  return [storedValue, setValue];
+  const setValue = useCallback<SetValue>((value) => {
+    const next = typeof value === 'function' ? value(valueRef.current) : value;
+    valueRef.current = next;
+
+    let storageError = false;
+    try {
+      window.localStorage.setItem(key, JSON.stringify(next));
+    } catch (error) {
+      storageError = true;
+      console.warn(`Error setting localStorage key "${key}":`, error);
+    }
+
+    setStored({ value: next, storageError });
+  }, [key]);
+
+  return [stored.value, setValue, stored.storageError];
 }

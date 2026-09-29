@@ -20,8 +20,8 @@ function isDesktopViewport() {
 }
 
 export default function App() {
-  const [content, setContent] = useLocalStorage<string>('markdown_document', DEFAULT_MARKDOWN);
-  const [title, setTitle] = useLocalStorage<string>('markdown_document_title', 'meu-documento');
+  const [content, setContent, contentStorageError] = useLocalStorage('markdown_document', DEFAULT_MARKDOWN);
+  const [title, setTitle, titleStorageError] = useLocalStorage('markdown_document_title', 'meu-documento');
   const [isDesktop, setIsDesktop] = useState(isDesktopViewport);
   const [viewMode, setViewMode] = useState<ViewMode>(() => (isDesktopViewport() ? 'split' : 'editor'));
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
@@ -137,6 +137,15 @@ export default function App() {
         onToggleTheme={toggleTheme}
         onOpenAbout={() => setIsAboutOpen(true)}
       />
+
+      {(contentStorageError || titleStorageError) && (
+        <div role="alert" className="flex flex-wrap items-center gap-2 bg-amber-50 px-4 py-2 text-sm text-amber-950 dark:bg-amber-950 dark:text-amber-100">
+          <span>Não foi possível ler ou salvar dados locais. Confira o texto e baixe uma cópia antes de fechar a aba.</span>
+          <button type="button" onClick={handleDownloadMd} className="rounded border border-current px-2 py-1 font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+            Baixar .md
+          </button>
+        </div>
+      )}
 
       {/* Main Split-View Workspace */}
       <main className="flex-1 flex overflow-hidden relative">
