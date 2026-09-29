@@ -3,6 +3,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import { Copy, Check } from 'lucide-react';
+import { isExternalImageUrl, safeMarkdownUrl } from '../../utils/markdownUrls';
 
 interface PreviewPaneProps {
   content: string;
@@ -10,21 +11,32 @@ interface PreviewPaneProps {
   previewRef: React.RefObject<HTMLDivElement>;
 }
 
-const URL_SCHEME = /^([a-z][a-z\d+.-]*):/i;
-const SAFE_LINK_PROTOCOLS = new Set(['http:', 'https:', 'mailto:']);
-const SAFE_IMAGE_PROTOCOLS = new Set(['http:', 'https:']);
+const MarkdownImage: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = ({ src, alt, ...props }) => {
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
 
-function safeMarkdownUrl(url: string, attribute: string) {
-  const normalizedUrl = url.trim();
+  if (!src || !isExternalImageUrl(src) || loadedSrc === src) {
+    return <img src={src} alt={alt} {...props} />;
+  }
 
-  if (normalizedUrl.startsWith('//')) return undefined;
+  const hostname = new URL(src, window.location.href).hostname;
 
-  const protocol = normalizedUrl.match(URL_SCHEME)?.[1].toLowerCase();
-  if (!protocol) return normalizedUrl;
-
-  const allowedProtocols = attribute === 'src' ? SAFE_IMAGE_PROTOCOLS : SAFE_LINK_PROTOCOLS;
-  return allowedProtocols.has(`${protocol}:`) ? normalizedUrl : undefined;
-}
+  return (
+    <span className="inline-flex flex-col gap-2 rounded-md border border-neutral-300 p-3 text-sm dark:border-neutral-700">
+      <span>{alt || 'Imagem externa'}</span>
+      <button
+        type="button"
+        onClick={() => setLoadedSrc(src)}
+        aria-label={`Carregar imagem externa: ${alt || hostname}`}
+        className="self-start rounded border border-neutral-400 px-2 py-1 font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 dark:border-neutral-500"
+      >
+        Carregar imagem externa
+      </button>
+      <span className="text-xs text-neutral-600 dark:text-neutral-400">
+        Seu navegador acessará {hostname}.
+      </span>
+    </span>
+  );
+};
 
 const PreBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({ children, ...props }) => {
   const [copied, setCopied] = useState(false);
@@ -112,6 +124,9 @@ export const PreviewPane: React.FC<PreviewPaneProps> = ({
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeHighlight]}
           components={{
+            img({ node: _node, ...props }) {
+              return <MarkdownImage {...props} />;
+            },
             pre({ node: _node, ...props }) {
               return <PreBlock {...props} />;
             },

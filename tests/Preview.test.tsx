@@ -53,7 +53,7 @@ describe('PreviewPane Component', () => {
     });
   });
 
-  it('blocks unsafe Markdown URLs while allowing web images', () => {
+  it('blocks unsafe Markdown URLs and waits before loading external images', () => {
     const { container } = render(
       <PreviewPane
         content={[
@@ -62,6 +62,8 @@ describe('PreviewPane Component', () => {
           '[script](javascript:alert(1))',
           '',
           '![invalid image](mailto:attacker@example.com)',
+          '',
+          '![insecure image](http://images.example.com/photo.png)',
           '',
           '![remote image](https://images.example.com/photo.png)',
         ].join('\n')}
@@ -73,10 +75,22 @@ describe('PreviewPane Component', () => {
     expect(container.querySelector('img[onerror]')).not.toBeInTheDocument();
     expect(container.querySelector('a')).not.toHaveAttribute('href');
     expect(screen.getByAltText('invalid image')).not.toHaveAttribute('src');
+    expect(screen.getByAltText('insecure image')).not.toHaveAttribute('src');
+    expect(screen.queryByAltText('remote image')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Carregar imagem externa: remote image/i }));
+
     expect(screen.getByAltText('remote image')).toHaveAttribute(
       'src',
       'https://images.example.com/photo.png'
     );
+  });
+
+  it('renders images from the current origin without asking', () => {
+    render(<PreviewPane content={'![local image](/favicon.svg)'} onScroll={() => {}} previewRef={dummyRef} />);
+
+    expect(screen.getByAltText('local image')).toHaveAttribute('src', '/favicon.svg');
+    expect(screen.queryByRole('button', { name: /Carregar imagem externa/i })).not.toBeInTheDocument();
   });
 
   it('does not leak parser metadata into HTML attributes', () => {

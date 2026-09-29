@@ -21,9 +21,9 @@ Editor Markdown executado inteiramente no navegador, com preview em tempo real, 
 
 O aplicativo não possui backend, contas ou analytics. O título e o conteúdo do documento ficam no `localStorage` do navegador e não são enviados pelo aplicativo.
 
-HTML inserido no Markdown não é executado. Links e imagens com protocolos perigosos são bloqueados; links aceitam `http`, `https` e `mailto`, enquanto imagens aceitam apenas `http` e `https`, além de caminhos locais.
+HTML inserido no Markdown não é executado. Links e imagens com protocolos perigosos são bloqueados; links aceitam `http`, `https` e `mailto`, enquanto imagens aceitam apenas `https` e caminhos locais.
 
-Imagens externas referenciadas explicitamente no Markdown são carregadas diretamente pelo navegador. Nesse caso, o servidor que hospeda a imagem recebe a requisição HTTP correspondente.
+Imagens externas referenciadas no Markdown só são carregadas após clicar em “Carregar imagem externa”. Nesse caso, o navegador faz uma requisição ao servidor que hospeda a imagem, compartilhando o endereço IP e a URL solicitada.
 
 ## Tecnologias
 
