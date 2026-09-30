@@ -58,7 +58,7 @@ export function AboutDialog({ onClose, onOpenPrivacy }: AboutDialogProps) {
         </p>
 
         <p className="mt-3 text-sm leading-6 text-neutral-600 dark:text-neutral-300">
-          Projeto criado por ChrisG e distribuído sob a licença MIT.
+          Projeto criado por ChristianGCa e distribuído sob a licença MIT.
         </p>
 
         <dl className="mt-6 divide-y divide-neutral-200 border-y border-neutral-200 text-sm dark:divide-neutral-800 dark:border-neutral-800">

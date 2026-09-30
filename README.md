@@ -23,9 +23,9 @@ O aplicativo não possui backend ou contas e seu código não integra analytics.
 
 HTML inserido no Markdown não é executado. Links e imagens com protocolos perigosos são bloqueados; links aceitam `http`, `https` e `mailto`, enquanto imagens aceitam apenas `https` e caminhos locais.
 
-Imagens externas referenciadas no Markdown só são carregadas após clicar em “Carregar imagem externa”. Nesse caso, o navegador faz uma requisição ao servidor que hospeda a imagem, compartilhando o endereço IP e a URL solicitada.
+No preview, imagens externas referenciadas no Markdown só são carregadas após clicar em “Carregar imagem externa”. Ao copiar HTML, imagens externas são convertidas em links; imagens locais permanecem como imagens. Carregar uma imagem externa ou abrir seu link faz uma requisição ao servidor que a hospeda, compartilhando o endereço IP e a URL solicitada.
 
-O aviso de privacidade está disponível nos diálogos de boas-vindas e “Sobre”. O responsável pelo site se identifica como ChristianGCa e pode ser contatado em <candelonichristian@gmail.com>.
+O aviso de privacidade está disponível nos diálogos de boas-vindas e “Sobre”. O responsável pelo site se identifica como ChristianGCa e pode ser contatado em <christiangca.dev@gmail.com>.
 
 ## Tecnologias
 
@@ -54,11 +54,11 @@ npm run build
 npm audit
 ```
 
-O build estático é gerado em `dist/`.
+O build executa a suíte de testes antes de gerar os arquivos estáticos em `dist/`.
 
 ## Licenças
 
-O código deste projeto é distribuído sob a [licença MIT](LICENSE), copyright © 2026 ChrisG. O build também publica uma cópia em `/LICENSE` para acompanhar os arquivos distribuídos.
+O código deste projeto é distribuído sob a [licença MIT](LICENSE), copyright © 2026 ChristianGCa. O build também publica uma cópia em `/LICENSE` para acompanhar os arquivos distribuídos.
 
 As licenças e atribuições das dependências incluídas no aplicativo estão em [THIRD-PARTY-NOTICES.txt](public/THIRD-PARTY-NOTICES.txt). Para regenerar o arquivo após atualizar dependências:
 

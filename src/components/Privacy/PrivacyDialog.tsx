@@ -47,7 +47,8 @@ export function PrivacyDialog({ onClose }: PrivacyDialogProps) {
         <div className="mt-6 space-y-5 text-neutral-700 dark:text-neutral-300">
           <section>
             <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">Contato</h3>
-            <p>Para dúvidas ou solicitações sobre dados pessoais, escreva para <a className="underline" href="mailto:candelonichristian@gmail.com">candelonichristian@gmail.com</a>.</p>
+            <p>Responsável pelo site: ChristianGCa.</p>
+            <p>Para dúvidas ou solicitações sobre dados pessoais, escreva para <a className="underline" href="mailto:christiangca.dev@gmail.com">christiangca.dev@gmail.com</a>.</p>
           </section>
 
           <section>
@@ -62,7 +63,7 @@ export function PrivacyDialog({ onClose }: PrivacyDialogProps) {
 
           <section>
             <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">Imagens externas</h3>
-            <p>Se um documento contiver imagens externas, elas só serão carregadas quando você escolher carregar cada uma. Nesse momento, o navegador acessará o servidor da imagem, que poderá receber seu IP e a URL solicitada. O tratamento feito por esse servidor segue as práticas do respectivo responsável.</p>
+            <p>No preview, imagens externas só são carregadas quando você escolher carregar cada uma. No HTML copiado, imagens externas viram links. Ao carregar uma imagem ou abrir um desses links, o navegador acessará o servidor externo, que poderá receber seu IP e a URL solicitada. O tratamento feito por esse servidor segue as práticas do respectivo responsável.</p>
           </section>
 
           <section>

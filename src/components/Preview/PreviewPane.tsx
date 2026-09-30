@@ -117,7 +117,12 @@ export const MarkdownContent: React.FC<{ content: string; exportMode?: boolean }
       rehypePlugins={[rehypeHighlight]}
       components={{
         img({ node: _node, ...props }) {
-          return exportMode ? <img {...props} /> : <MarkdownImage {...props} />;
+          if (exportMode) {
+            return props.src && isExternalImageUrl(props.src)
+              ? <a href={props.src}>{props.alt || props.src}</a>
+              : <img {...props} />;
+          }
+          return <MarkdownImage {...props} />;
         },
         pre({ node: _node, ...props }) {
           return exportMode ? <pre {...props} /> : <PreBlock {...props} />;
