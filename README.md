@@ -1,4 +1,4 @@
-# Markdown Editor Web
+# PureMD
 
 <img src="./public/favicon.svg" alt="Descrição da imagem" width="300">
 
