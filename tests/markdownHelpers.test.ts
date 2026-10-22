@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyFormatting } from '../src/utils/markdownHelpers';
+import { applyFormatting, getCursorPosition, getListContinuation } from '../src/utils/markdownHelpers';
 
 describe('markdownHelpers utility', () => {
   it('applies bold formatting to empty selection', () => {
@@ -85,5 +85,27 @@ describe('markdownHelpers utility', () => {
     const result = applyFormatting(text, 0, 0, 'table');
     expect(result.text).toContain('| Cabeçalho 1 | Cabeçalho 2 |');
     expect(result.text).toContain('|---|---|');
+  });
+});
+
+describe('getCursorPosition', () => {
+  it('returns 1-based line and column', () => {
+    expect(getCursorPosition('', 0)).toEqual({ line: 1, col: 1 });
+    expect(getCursorPosition('ab\ncd', 4)).toEqual({ line: 2, col: 2 });
+  });
+});
+
+describe('getListContinuation', () => {
+  it('continues bullets, tasks and ordered lists', () => {
+    expect(getListContinuation('  + item')).toEqual({ nextPrefix: '  + ', content: 'item' });
+    expect(getListContinuation('- [X] feito')).toEqual({ nextPrefix: '- [ ] ', content: 'feito' });
+    expect(getListContinuation('* [ ] ')).toEqual({ nextPrefix: '* [ ] ', content: '' });
+    expect(getListContinuation('9. nove')).toEqual({ nextPrefix: '10. ', content: 'nove' });
+    expect(getListContinuation('3) três')).toEqual({ nextPrefix: '4) ', content: 'três' });
+  });
+
+  it('ignores lines that are not list items', () => {
+    expect(getListContinuation('texto comum')).toBeNull();
+    expect(getListContinuation('-sem espaço')).toBeNull();
   });
 });

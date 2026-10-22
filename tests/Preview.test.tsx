@@ -31,6 +31,15 @@ describe('PreviewPane Component', () => {
     expect(screen.getByText(/js/i)).toBeInTheDocument();
   });
 
+  it('does not style fenced code without a language as inline code', () => {
+    const markdown = 'Use `npm test`.\n\n```\nplain block\n```';
+    render(<PreviewPane content={markdown} onScroll={() => {}} previewRef={dummyRef} />);
+
+    expect(screen.getByText('npm test').parentElement?.tagName).toBe('P');
+    expect(screen.getByText('plain block').closest('pre')).not.toBeNull();
+    expect(screen.getByText('plain block')).not.toHaveClass('border');
+  });
+
   it('copies the complete text from highlighted code blocks', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', {

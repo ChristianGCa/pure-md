@@ -2,6 +2,13 @@ import { useEffect, useState, useCallback } from 'react';
 
 export type Theme = 'light' | 'dark' | 'system';
 
+function getSystemDark() {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  return false;
+}
+
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
@@ -17,14 +24,9 @@ export function useTheme() {
     return 'system';
   });
 
-  const getSystemDark = () => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  };
+  const [systemDark, setSystemDark] = useState(getSystemDark);
 
-  const isDark = theme === 'dark' || (theme === 'system' && getSystemDark());
+  const isDark = theme === 'dark' || (theme === 'system' && systemDark);
 
   const applyTheme = useCallback((dark: boolean) => {
     if (typeof document !== 'undefined') {
@@ -56,16 +58,17 @@ export function useTheme() {
   }, [isDark, applyTheme]);
 
   useEffect(() => {
-    if (theme !== 'system' || typeof window === 'undefined' || !window.matchMedia) return;
+    if (typeof window === 'undefined' || !window.matchMedia) return;
 
+    // Track the OS preference in state so isDark (and the toggle icon) stay in sync.
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = () => {
-      applyTheme(mediaQuery.matches);
+    const handleChange = (event: MediaQueryListEvent) => {
+      setSystemDark(event.matches);
     };
 
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [theme, applyTheme]);
+  }, []);
 
   return {
     theme,

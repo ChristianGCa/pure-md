@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useLocalStorage } from '../src/hooks/useLocalStorage';
 import { useTheme } from '../src/hooks/useTheme';
+import { useTimedFlag } from '../src/hooks/useTimedFlag';
 
 describe('useLocalStorage hook', () => {
   beforeEach(() => {
@@ -110,6 +111,34 @@ describe('useTheme hook', () => {
     expect(document.documentElement.classList.contains('dark')).toBe(false);
   });
 
+  it('follows OS color scheme changes while in system mode', () => {
+    let notify: ((event: MediaQueryListEvent) => void) | undefined;
+    const matchMedia = vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: (_type: string, listener: (event: MediaQueryListEvent) => void) => {
+        notify = listener;
+      },
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }) as unknown as MediaQueryList);
+
+    const { result } = renderHook(() => useTheme());
+    expect(result.current.isDark).toBe(false);
+
+    act(() => notify?.({ matches: true } as MediaQueryListEvent));
+    expect(result.current.isDark).toBe(true);
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+
+    act(() => result.current.toggleTheme());
+    expect(result.current.theme).toBe('light');
+    expect(result.current.isDark).toBe(false);
+    matchMedia.mockRestore();
+  });
+
   it('keeps theme toggling available when storage is blocked', () => {
     const read = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new DOMException('Access denied', 'SecurityError');
@@ -127,5 +156,23 @@ describe('useTheme hook', () => {
     read.mockRestore();
     write.mockRestore();
     warning.mockRestore();
+  });
+});
+
+describe('useTimedFlag hook', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('restarts the timer when triggered again and resets afterwards', () => {
+    vi.useFakeTimers();
+    const { result } = renderHook(() => useTimedFlag(2000));
+
+    act(() => result.current[1]());
+    act(() => vi.advanceTimersByTime(1500));
+    act(() => result.current[1]());
+    act(() => vi.advanceTimersByTime(1500));
+    expect(result.current[0]).toBe(true);
+
+    act(() => vi.advanceTimersByTime(500));
+    expect(result.current[0]).toBe(false);
   });
 });

@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Sun,
   Moon,
   Download,
   Copy,
-  Code2,
+  CodeXml,
+  FileCode,
   Trash2,
   RefreshCw,
-  Columns,
-  Square,
+  Columns2,
   Eye,
   Check,
   Info,
 } from 'lucide-react';
+import { useTimedFlag } from '../../hooks/useTimedFlag';
 
 export type ViewMode = 'split' | 'editor' | 'preview';
 
@@ -47,23 +48,15 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleTheme,
   onOpenAbout,
 }) => {
-  const [copiedMd, setCopiedMd] = useState(false);
-  const [copiedHtml, setCopiedHtml] = useState(false);
+  const [copiedMd, flashCopiedMd] = useTimedFlag();
+  const [copiedHtml, flashCopiedHtml] = useTimedFlag();
 
   const handleCopyMd = async () => {
-    const ok = await onCopyMarkdown();
-    if (ok) {
-      setCopiedMd(true);
-      setTimeout(() => setCopiedMd(false), 2000);
-    }
+    if (await onCopyMarkdown()) flashCopiedMd();
   };
 
   const handleCopyHtml = async () => {
-    const ok = await onCopyHtml();
-    if (ok) {
-      setCopiedHtml(true);
-      setTimeout(() => setCopiedHtml(false), 2000);
-    }
+    if (await onCopyHtml()) flashCopiedHtml();
   };
 
   return (
@@ -100,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
               : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
           }`}
         >
-          <Square className="w-3.5 h-3.5" />
+          <CodeXml className="w-3.5 h-3.5" aria-hidden="true" />
           <span className="hidden sm:inline">Editor</span>
         </button>
 
@@ -117,7 +110,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
-            <Columns className="w-3.5 h-3.5" />
+            <Columns2 className="w-3.5 h-3.5" aria-hidden="true" />
             <span className="hidden sm:inline">Dividido</span>
           </button>
         )}
@@ -134,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
               : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
           }`}
         >
-          <Eye className="w-3.5 h-3.5" />
+          <Eye className="w-3.5 h-3.5" aria-hidden="true" />
           <span className="hidden sm:inline">Preview</span>
         </button>
       </div>
@@ -159,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
           aria-label="Copiar HTML"
           className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white bg-neutral-100 hover:bg-neutral-200/80 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-md transition-colors"
         >
-          {copiedHtml ? <Check className="w-3.5 h-3.5 text-brand-500" /> : <Code2 className="w-3.5 h-3.5" />}
+          {copiedHtml ? <Check className="w-3.5 h-3.5 text-brand-500" /> : <FileCode className="w-3.5 h-3.5" />}
           <span className="hidden md:inline">{copiedHtml ? 'Copiado!' : 'Copiar HTML'}</span>
         </button>
 

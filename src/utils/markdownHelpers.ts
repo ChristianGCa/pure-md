@@ -212,3 +212,34 @@ export function applyFormatting(
       };
   }
 }
+
+export function getCursorPosition(text: string, position: number): { line: number; col: number } {
+  const lines = text.substring(0, position).split('\n');
+  return { line: lines.length, col: lines[lines.length - 1].length + 1 };
+}
+
+export interface ListContinuation {
+  nextPrefix: string;
+  content: string;
+}
+
+/** Returns the prefix for the next list item when the line is a GFM list item. */
+export function getListContinuation(line: string): ListContinuation | null {
+  const taskMatch = line.match(/^(\s*)([-*+])\s\[[ xX]\]\s(.*)$/);
+  if (taskMatch) {
+    return { nextPrefix: `${taskMatch[1]}${taskMatch[2]} [ ] `, content: taskMatch[3] };
+  }
+
+  const bulletMatch = line.match(/^(\s*)([-*+])\s(.*)$/);
+  if (bulletMatch) {
+    return { nextPrefix: `${bulletMatch[1]}${bulletMatch[2]} `, content: bulletMatch[3] };
+  }
+
+  const orderedMatch = line.match(/^(\s*)(\d+)([.)])\s(.*)$/);
+  if (orderedMatch) {
+    const nextNumber = parseInt(orderedMatch[2], 10) + 1;
+    return { nextPrefix: `${orderedMatch[1]}${nextNumber}${orderedMatch[3]} `, content: orderedMatch[4] };
+  }
+
+  return null;
+}

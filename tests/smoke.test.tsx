@@ -80,6 +80,29 @@ describe('App Integration Test', () => {
     expect(welcomeDialog).not.toBeInTheDocument();
   });
 
+  it('does not show the welcome message again after it was closed', () => {
+    const { unmount } = render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' }));
+    unmount();
+
+    render(<App />);
+    expect(screen.queryByRole('dialog', { name: 'Bem-vindo ao PureMD' })).not.toBeInTheDocument();
+  });
+
+  it('updates the status bar cursor position after a toolbar action', async () => {
+    window.localStorage.setItem('markdown_document', JSON.stringify('linha 1\nlinha 2'));
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar mensagem de boas-vindas' }));
+
+    const textarea = screen.getByRole('textbox', { name: 'Editor Markdown' }) as HTMLTextAreaElement;
+    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    fireEvent.click(screen.getByRole('button', { name: 'Negrito' }));
+
+    const status = screen.getByRole('contentinfo', { name: 'Barra de status do documento' });
+    // "**" is inserted at the end of line 2 (col 8), and the placeholder is selected from col 10
+    await waitFor(() => expect(status).toHaveTextContent('Linha 2, Coluna 10'));
+  });
+
   it('opens project details from the information button and closes the dialog', () => {
     render(<App />);
 

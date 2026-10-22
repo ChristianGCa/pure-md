@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import { Copy, Check } from 'lucide-react';
 import { isExternalImageUrl, safeMarkdownUrl } from '../../utils/markdownUrls';
+import { useTimedFlag } from '../../hooks/useTimedFlag';
 
 interface PreviewPaneProps {
   content: string;
@@ -39,7 +40,7 @@ const MarkdownImage: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = ({ sr
 };
 
 const PreBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({ children, ...props }) => {
-  const [copied, setCopied] = useState(false);
+  const [copied, flashCopied] = useTimedFlag();
   const preRef = React.useRef<HTMLPreElement>(null);
 
   // Extract the language label from the highlighted code element.
@@ -62,29 +63,28 @@ const PreBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({ children, ..
       if (!navigator.clipboard) return;
 
       await navigator.clipboard.writeText(preRef.current?.textContent ?? '');
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      flashCopied();
     } catch {
       // ignore
     }
   };
 
   return (
-    <div className="relative group my-4 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-900">
-      <div className="flex items-center justify-between px-3.5 py-1.5 text-xs text-neutral-400 bg-neutral-950/80 border-b border-neutral-800 select-none">
-        <span className="font-mono uppercase font-semibold text-[11px] tracking-wider text-neutral-400">
+    <div className="relative group my-4 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-slate-50 dark:bg-slate-900">
+      <div className="flex items-center justify-between px-3.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 select-none">
+        <span className="font-mono uppercase font-semibold text-[11px] tracking-wider">
           {language || 'code'}
         </span>
         <button
           type="button"
           onClick={handleCopy}
           aria-label="Copiar código"
-          className="flex items-center gap-1.5 px-2 py-0.5 text-xs text-neutral-400 hover:text-white rounded hover:bg-neutral-800 transition-colors"
+          className="flex items-center gap-1.5 px-2 py-0.5 text-xs hover:text-slate-900 dark:hover:text-white rounded hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
         >
           {copied ? (
             <>
-              <Check className="w-3.5 h-3.5 text-brand-400" />
-              <span className="text-brand-400 text-[11px]">Copiado!</span>
+              <Check className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
+              <span className="text-brand-600 dark:text-brand-400 text-[11px]">Copiado!</span>
             </>
           ) : (
             <>
@@ -97,7 +97,7 @@ const PreBlock: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({ children, ..
       <pre
         ref={preRef}
         {...props}
-        className="!m-0 !p-4 !bg-transparent overflow-x-auto text-sm font-mono leading-relaxed"
+        className="!m-0 !p-4 !bg-transparent !text-slate-800 dark:!text-slate-200 overflow-x-auto text-sm font-mono leading-relaxed"
       >
         {children}
       </pre>
@@ -126,24 +126,6 @@ export const MarkdownContent: React.FC<{ content: string; exportMode?: boolean }
         },
         pre({ node: _node, ...props }) {
           return exportMode ? <pre {...props} /> : <PreBlock {...props} />;
-        },
-        code({ node: _node, className, children, ...props }) {
-          const isInline = !className?.includes('hljs') && !className?.includes('language-');
-          if (isInline) {
-            return (
-              <code
-                className="px-1.5 py-0.5 rounded text-xs font-mono bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700"
-                {...props}
-              >
-                {children}
-              </code>
-            );
-          }
-          return (
-            <code className={className} {...props}>
-              {children}
-            </code>
-          );
         },
         table({ node: _node, children, ...props }) {
           return (

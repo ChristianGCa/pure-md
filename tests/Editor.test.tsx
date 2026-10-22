@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { useState, useRef } from 'react';
 import { Toolbar } from '../src/components/Editor/Toolbar';
 import { EditorPane } from '../src/components/Editor/EditorPane';
+import { FormatAction } from '../src/utils/markdownHelpers';
 
 describe('Toolbar Component', () => {
   it('calls onAction when formatting buttons are clicked', () => {
@@ -24,7 +25,13 @@ describe('Toolbar Component', () => {
 });
 
 describe('EditorPane Component', () => {
-  const TestEditorWrapper = ({ initial = '' }: { initial?: string }) => {
+  const TestEditorWrapper = ({
+    initial = '',
+    onFormat = vi.fn(),
+  }: {
+    initial?: string;
+    onFormat?: (action: FormatAction) => void;
+  }) => {
     const [val, setVal] = useState(initial);
     const ref = useRef<HTMLTextAreaElement>(null);
     return (
@@ -33,6 +40,7 @@ describe('EditorPane Component', () => {
         onChange={setVal}
         onScroll={vi.fn()}
         textareaRef={ref}
+        onFormat={onFormat}
       />
     );
   };
@@ -59,5 +67,50 @@ describe('EditorPane Component', () => {
 
     fireEvent.keyDown(textarea, { key: 'Tab' });
     expect(textarea.value).toBe('  ');
+  });
+
+  it('indents every selected line on Tab instead of replacing the selection', () => {
+    render(<TestEditorWrapper initial={'um\ndois\ntrês'} />);
+    const textarea = screen.getByRole('textbox', { name: 'Editor Markdown' }) as HTMLTextAreaElement;
+
+    textarea.setSelectionRange(1, 6);
+    fireEvent.keyDown(textarea, { key: 'Tab' });
+    expect(textarea.value).toBe('  um\n  dois\ntrês');
+  });
+
+  it('sends formatting shortcuts to onFormat', () => {
+    const onFormat = vi.fn();
+    render(<TestEditorWrapper initial="texto" onFormat={onFormat} />);
+    const textarea = screen.getByRole('textbox', { name: 'Editor Markdown' });
+
+    fireEvent.keyDown(textarea, { key: 'b', ctrlKey: true });
+    expect(onFormat).toHaveBeenCalledWith('bold');
+  });
+
+  it('continues a list on Enter and replaces the selected text', () => {
+    render(<TestEditorWrapper initial={'- um REMOVER'} />);
+    const textarea = screen.getByRole('textbox', { name: 'Editor Markdown' }) as HTMLTextAreaElement;
+
+    textarea.setSelectionRange(4, textarea.value.length);
+    fireEvent.keyDown(textarea, { key: 'Enter' });
+    expect(textarea.value).toBe('- um\n- ');
+  });
+
+  it('ends the list on Enter in an empty item', () => {
+    render(<TestEditorWrapper initial={'1. um\n2. '} />);
+    const textarea = screen.getByRole('textbox', { name: 'Editor Markdown' }) as HTMLTextAreaElement;
+
+    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    fireEvent.keyDown(textarea, { key: 'Enter' });
+    expect(textarea.value).toBe('1. um\n');
+  });
+
+  it('unindents every selected line on Shift+Tab', () => {
+    render(<TestEditorWrapper initial={'  um\n dois\ntrês'} />);
+    const textarea = screen.getByRole('textbox', { name: 'Editor Markdown' }) as HTMLTextAreaElement;
+
+    textarea.setSelectionRange(0, textarea.value.length);
+    fireEvent.keyDown(textarea, { key: 'Tab', shiftKey: true });
+    expect(textarea.value).toBe('um\ndois\ntrês');
   });
 });

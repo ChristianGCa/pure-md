@@ -1,9 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
 import { ShieldCheck, X } from 'lucide-react';
 
+const DISMISSED_KEY = 'markdown_welcome_dismissed';
+
+function wasDismissed() {
+  try {
+    return window.localStorage.getItem(DISMISSED_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
 export function WelcomeDialog({ onOpenPrivacy }: { onOpenPrivacy: () => void }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(() => !wasDismissed());
   const dialogRef = useRef<HTMLDialogElement>(null);
+
+  const dismiss = () => {
+    setIsOpen(false);
+    try {
+      window.localStorage.setItem(DISMISSED_KEY, 'true');
+    } catch {
+      // Without storage the message simply shows again on the next visit.
+    }
+  };
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -24,8 +43,8 @@ export function WelcomeDialog({ onOpenPrivacy }: { onOpenPrivacy: () => void }) 
       aria-modal="true"
       aria-labelledby="welcome-title"
       aria-describedby="welcome-description welcome-privacy"
-      onCancel={() => setIsOpen(false)}
-      onClose={() => setIsOpen(false)}
+      onCancel={dismiss}
+      onClose={dismiss}
       className="m-auto w-11/12 max-w-lg overflow-hidden rounded-xl border border-neutral-200 bg-white p-0 text-neutral-900 shadow-2xl backdrop:bg-neutral-950/70 backdrop:backdrop-blur-sm dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
     >
       <div className="px-6 pb-6 pt-6 sm:px-8 sm:pb-8 sm:pt-8">
@@ -47,7 +66,7 @@ export function WelcomeDialog({ onOpenPrivacy }: { onOpenPrivacy: () => void }) 
           <button
             type="button"
             autoFocus
-            onClick={() => setIsOpen(false)}
+            onClick={dismiss}
             aria-label="Fechar mensagem de boas-vindas"
             title="Fechar"
             className="-mr-2 -mt-1 rounded-md p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-neutral-300"
@@ -69,7 +88,7 @@ export function WelcomeDialog({ onOpenPrivacy }: { onOpenPrivacy: () => void }) 
         <button
           type="button"
           onClick={() => {
-            setIsOpen(false);
+            dismiss();
             onOpenPrivacy();
           }}
           className="mt-4 text-sm font-medium underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"

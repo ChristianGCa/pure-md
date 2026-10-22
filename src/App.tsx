@@ -12,7 +12,7 @@ import { StatusBar } from './components/Layout/StatusBar';
 import { WelcomeDialog } from './components/Welcome/WelcomeDialog';
 import { AboutDialog } from './components/About/AboutDialog';
 import { PrivacyDialog } from './components/Privacy/PrivacyDialog';
-import { applyFormatting, FormatAction } from './utils/markdownHelpers';
+import { applyFormatting, FormatAction, getCursorPosition } from './utils/markdownHelpers';
 
 const DESKTOP_VIEW_QUERY = '(min-width: 1024px)';
 
@@ -65,6 +65,7 @@ export default function App() {
         if (editorRef.current) {
           editorRef.current.focus();
           editorRef.current.setSelectionRange(result.selectionStart, result.selectionEnd);
+          setCursorPos(getCursorPosition(result.text, result.selectionStart));
         }
       });
     },
@@ -105,7 +106,8 @@ export default function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    // Revoking synchronously can cancel the download in some browsers.
+    setTimeout(() => URL.revokeObjectURL(url), 40_000);
   }, [content, title]);
 
   const handleResetSample = useCallback(() => {
@@ -165,6 +167,7 @@ export default function App() {
                 onChange={setContent}
                 onScroll={handleEditorScroll}
                 textareaRef={editorRef}
+                onFormat={handleToolbarAction}
                 onCursorChange={handleCursorChange}
               />
             </div>
